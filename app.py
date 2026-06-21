@@ -56,7 +56,7 @@ if not st.session_state['logged_in']: # Only show login if not logged in by quer
 
     if st.sidebar.button("Login", key="login_button"):
         # Dummy authentication for demonstration. Replace with actual authentication logic.
-        if login_username == "marius" and login_password == "password123": # Hardcoded for example
+        if login_username == "contact@atelierallure.co.uk" and login_password == "Brighton23!": # Hardcoded for example
             st.session_state['logged_in'] = True
             st.session_state['username'] = login_username
             if keep_me_logged_in:
