@@ -174,6 +174,11 @@ if st.session_state['current_view'] == '📤 Upload & Takeoff':
     if 'item_2_meta' not in st.session_state: st.session_state['item_2_meta'] = {"Material/Finish": "Pending AI Takeoff..."}
     if 'takeoff_complete' not in st.session_state: st.session_state['takeoff_complete'] = False
 
+    # Initialize item_2_rows to prevent NameError in cumulative totals
+    item_2_rows = []
+    item_2_total_ex_vat = 0.0
+    item_2_inc_vat = 0.0
+
     # --- Step 1: Dynamic Uploader Window ---
     st.markdown("---")
     st.subheader("📸 Step 1: Project Initiation & Drawing Reference Layer")
