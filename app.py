@@ -14,8 +14,44 @@ except Exception as config_error:
 
 def get_registered_users():
     conn = sqlite3.connect("craftai.db")
-    df_users = pd.read_sql_query("SELECT user_id, workshop_name, hourly_rate FROM users", conn)
-    conn.close()
+    try:
+        cursor = conn.cursor()
+        # Create 'users' table if it doesn't exist
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                user_id TEXT PRIMARY KEY,
+                workshop_name TEXT NOT NULL,
+                hourly_rate REAL NOT NULL
+            )
+        """)
+        # Insert default data if the table is empty
+        cursor.execute("SELECT COUNT(*) FROM users")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("INSERT INTO users (user_id, workshop_name, hourly_rate) VALUES (?, ?, ?)",
+                           ("default_user_1", "Default Joinery Workshop", 55.00))
+            cursor.execute("INSERT INTO users (user_id, workshop_name, hourly_rate) VALUES (?, ?, ?)",
+                           ("default_user_2", "Custom Cabinetry", 60.00))
+        conn.commit()
+    except Exception as e:
+        st.error(f"Error managing 'users' table: {e}")
+        # Fallback DataFrame if table creation/population fails
+        conn.close()
+        return pd.DataFrame([
+            {"user_id": "fallback_1", "workshop_name": "Fallback Workshop A", "hourly_rate": 50.00},
+            {"user_id": "fallback_2", "workshop_name": "Fallback Workshop B", "hourly_rate": 55.00}
+        ])
+
+    try:
+        df_users = pd.read_sql_query("SELECT user_id, workshop_name, hourly_rate FROM users", conn)
+    except pd.errors.DatabaseError as e:
+        st.error(f"Database error reading 'users' table: {e}")
+        # Fallback DataFrame if reading still fails
+        df_users = pd.DataFrame([
+            {"user_id": "fallback_1", "workshop_name": "Fallback Workshop A", "hourly_rate": 50.00},
+            {"user_id": "fallback_2", "workshop_name": "Fallback Workshop B", "hourly_rate": 55.00}
+        ])
+    finally:
+        conn.close()
     return df_users
 
 st.set_page_config(page_title="CraftAI - Enterprise Takeoff", layout="wide")
