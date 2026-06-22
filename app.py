@@ -73,10 +73,8 @@ if 'markup_annotations' not in st.session_state:
 
 # --- 3. CUSTOMER GATEWAY (LOGIN / REGISTRATION) PANEL ---
 if not st.session_state['auth_status']:
-    # Cleaned header: Removed brand text, amplified portal title size & letter tracking
     st.write("<div style='text-align: center; margin-top: 60px; margin-bottom: 30px;'><h1 style='font-size: 42px !important; font-weight: 300 !important; letter-spacing: 3px !important;'>AI JOINERY ESTIMATOR PORTAL</h1></div>", unsafe_allow_html=True)
     
-    # Simple Toggle for Login vs Free Sign Up
     auth_mode = st.radio("Access Mode", ["Sign In to Account", "Create Free Client Account"], horizontal=True, label_visibility="collapsed")
     
     col_left, col_mid, col_right = st.columns([1, 2, 1])
@@ -114,4 +112,21 @@ if not st.session_state['auth_status']:
     st.stop()
 
 # --- 4. REFINED HOMEPAGE INTRODUCTION ONBOARDING (Logged In State) ---
-st.write(f"<div style='float: right; padding-top: 10px; color: #888888;'>Logged in as: <b>{st.session_state['auth_email']}</b>
+# FIX: Clean quote configuration to resolve the f-string SyntaxError entirely
+st.write(f'<div style="float: right; padding-top: 10px; color: #888888;">Logged in as: <b>{st.session_state["auth_email"]}</b></div>', unsafe_allow_html=True)
+st.write("# ATELIER ALLURE")
+st.write("### Welcome to AI Joinery Estimator")
+st.markdown("<p style='color: #B3B3B3; font-size: 16px;'>Please describe your project, upload documents (JPEG, PNG, PDF, DXF, DWG, Collada CAD files), and get an instant estimate for your joinery project.</p>", unsafe_allow_html=True)
+
+# Minimalist log-out shortcut
+if st.sidebar.button("🔒 Secure Portal Sign Out", use_container_width=True):
+    st.session_state['auth_status'] = False
+    st.session_state['auth_email'] = ""
+    st.rerun()
+
+st.markdown("---")
+
+# --- 5. NAVIGATION TAB CONTROL RENDERER ---
+nav_cols = st.columns(4)
+with nav_cols[0]:
+    if st.button("📐 New Project Estimate", use_container
