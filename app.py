@@ -115,8 +115,15 @@ if "verify" in query_params:
 
 # --- 5. RUNTIME STATE STRUCT VARIATION DICTIONARIES ---
 CURRENCY_MAP = {"British Pound (GBP)": "£", "Euro (EUR)": "€", "US Dollar (USD)": "$"}
-for state_var in ['logged_in', 'takeoff_complete']:
-    if state_var not in st.session_state: st.session_state[state_var] = False
+
+# FORCE STATE RESET INJECTION: Safely catch and override the caching memory gap
+if 'keep_logged_in' not in st.session_state:
+    st.session_state['keep_logged_in'] = False
+if 'logged_in' not in st.session_state:
+    st.session_state['logged_in'] = False
+if 'takeoff_complete' not in st.session_state:
+    st.session_state['takeoff_complete'] = False
+
 for state_var in ['user_role', 'username', 'pending_verification_email', 'current_view_tab']:
     if state_var not in st.session_state: st.session_state[state_var] = ''
 if not st.session_state['current_view_tab']:
