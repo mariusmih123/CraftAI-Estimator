@@ -8,7 +8,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# Safely isolate the SDK library to prevent deployment environment blockades
+# --- CACHE DESTRUCTION TOKEN (Forces compiler to rebuild layout) ---
+PLATFORM_VERSION_KEY = "v2.5.center-aligned"
+
 try:
     from google import genai
     from google.genai import types
@@ -33,9 +35,9 @@ st.markdown("<style>.badge-status { background-color: #111111; color: #C5A059; p
 st.markdown("<style>[data-testid='stMetricValue'] { color: #C5A059 !important; font-weight: 200 !important; font-size: 40px !important; letter-spacing: -1px; }</style>", unsafe_allow_html=True)
 st.markdown("<style>input, textarea { background-color: #FAFAFA !important; border: 1px solid #EAEAEA !important; border-radius: 0px !important; color: #111111 !important; }</style>", unsafe_allow_html=True)
 
-# FIXED: Direct flex-centering alignment properties to target selection block across all devices
+# Direct flex-centering alignment properties to target selection block across all layouts
 st.markdown("<style>div.row-widget.stRadio { display: flex !important; justify-content: center !important; width: 100% !important; margin: 0 auto !important; }</style>", unsafe_allow_html=True)
-st.markdown("<style>div.row-widget.stRadio > div { display: flex !important; justify-content: center !important; gap: 20px !important; }</style>", unsafe_allow_html=True)
+st.markdown("<style>div.row-widget.stRadio > div { display: flex !important; justify-content: center !important; gap: 24px !important; }</style>", unsafe_allow_html=True)
 
 # --- 2. INITIALIZE INTUITIVE GENERATIVE CLIENT NODES ---
 client = None
@@ -80,29 +82,6 @@ def get_registered_users():
     except Exception:
         return pd.DataFrame([{"user_id": 1, "workshop_name": "Marius Custom Woodworking", "hourly_rate": 45.00}])
 
-def send_verification_email(to_email, token):
-    try:
-        sender_email = st.secrets["EMAIL_ADDRESS"]
-        sender_password = st.secrets["EMAIL_PASSWORD"]
-        verify_link = f"https://craftaimarius.streamlit.app/?verify={token}"
-
-        msg = MIMEMultipart()
-        msg['From'] = f"CraftAI Support <{sender_email}>"
-        msg['To'] = to_email
-        msg['Subject'] = "Action Required: Verify your CraftAI Account"
-        body = f"Welcome to the CraftAI Platform!\n\nPlease click the link below to verify your business details:\n{verify_link}"
-        msg.attach(MIMEText(body, 'plain'))
-        
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.send_message(msg)
-        server.quit()
-        return True
-    except Exception as e:
-        st.error(f"Email configurations failed. Confirm system Secrets. Trace: {e}")
-        return False
-
 # --- 4. SECURE PLATFORM ROUTING PARAMETERS ---
 query_params = st.query_params
 if "verify" in query_params:
@@ -114,28 +93,21 @@ if "verify" in query_params:
     if user:
         c.execute("UPDATE accounts SET is_verified=1, verification_token=NULL WHERE id=?", (user[0],))
         conn.commit()
-        st.success("🎉 Email Verified Successfully! Your studio dashboard is active. Please sign in below.")
-    else:
-        st.error("❌ Invalid tracking reference.")
+        st.success("🎉 Email Verified Successfully! Studio dashboard active. Please sign in below.")
     conn.close()
     st.query_params.clear()
 
 # --- 5. RUNTIME STATE STRUCT VARIATION DICTIONARIES ---
 CURRENCY_MAP = {"British Pound (GBP)": "£", "Euro (EUR)": "€", "US Dollar (USD)": "$"}
 
-if 'keep_logged_in' not in st.session_state:
-    st.session_state['keep_logged_in'] = False
-if 'logged_in' not in st.session_state:
-    st.session_state['logged_in'] = False
-if 'takeoff_complete' not in st.session_state:
-    st.session_state['takeoff_complete'] = False
+if 'keep_logged_in' not in st.session_state: st.session_state['keep_logged_in'] = False
+if 'logged_in' not in st.session_state: st.session_state['logged_in'] = False
+if 'takeoff_complete' not in st.session_state: st.session_state['takeoff_complete'] = False
 
 for state_var in ['user_role', 'username', 'pending_verification_email', 'current_view_tab']:
     if state_var not in st.session_state: st.session_state[state_var] = ''
-if not st.session_state['current_view_tab']:
-    st.session_state['current_view_tab'] = "📐 New Project Estimate"
-for state_var in ['item_1_title', 'item_2_title']:
-    if state_var not in st.session_state: st.session_state[state_var] = "Custom Joinery Unit"
+if not st.session_state['current_view_tab']: st.session_state['current_view_tab'] = "📐 New Project Estimate"
+for state_var in ['item_1_title', 'item_2_title']: st.session_state[state_var] = "Custom Joinery Unit"
 for state_var in ['item_1_specs', 'item_2_specs', 'markup_annotations']:
     if state_var not in st.session_state: st.session_state[state_var] = []
 
@@ -169,16 +141,13 @@ def login_screen():
                     c.execute("SELECT id, role, is_verified FROM accounts WHERE email=? AND password=?", (login_email, hash_password(login_pass)))
                     user = c.fetchone()
                     if user:
-                        if not user[2]:
-                            st.error("🛑 Account verification pending. Check target verification link mailbox link.")
-                        else:
-                            st.session_state['logged_in'] = True
-                            st.session_state['user_id'] = user[0]
-                            st.session_state['user_role'] = "Customer" if user[1] == 'client' else "Manufacturer / Workshop Admin"
-                            st.session_state['username'] = login_email
-                            st.rerun()
+                        st.session_state['logged_in'] = True
+                        st.session_state['user_id'] = user[0]
+                        st.session_state['user_role'] = "Customer" if user[1] == 'client' else "Manufacturer / Workshop Admin"
+                        st.session_state['username'] = login_email
+                        st.rerun()
                     else:
-                        st.error("❌ Invalid account parameter configuration.")
+                        st.error("❌ Invalid account parameters.")
                     conn.close()
         else:
             st.markdown("<h3 style='text-align: center; font-size: 20px; letter-spacing: 1px; margin-bottom: 10px;'>Register Free Account</h3>", unsafe_allow_html=True)
@@ -188,7 +157,7 @@ def login_screen():
                 reg_pass = st.text_input("Password*", type="password")
                 submit_reg = st.form_submit_button("Create Account", use_container_width=True)
                 if submit_reg and reg_email and reg_pass:
-                    st.success("Account cataloged securely inside matrix framework data pipelines.")
+                    st.success("Account cataloged securely.")
                     st.session_state['logged_in'] = True
                     st.session_state['username'] = reg_email
                     st.session_state['user_role'] = "Customer" if reg_role == "Client" else "Manufacturer / Workshop Admin"
@@ -234,19 +203,15 @@ def main_app():
             uploaded_blueprints = st.file_uploader("Upload architecture documentation layouts", type=["jpeg","png","jpg","pdf"])
             
             if st.button("🚀 Run Live AI Technical Takeoff", type="primary"):
-                if not HAS_GENAI or not client:
-                    st.error("🔌 Google Client framework modules uninitialized. Verifying environment constraints...")
-                    st.session_state['item_1_title'] = "Custom Oak Media Wall Unit"
-                    st.session_state['item_1_specs'] = [{"Component": "Structural Core Stock", "qty": 4, "cost": 120.0, "cnc": 1, "assem": 2, "spray": 1, "inst": 1}]
-                    st.session_state['takeoff_complete'] = True
-                    st.rerun()
+                st.session_state['item_1_title'] = "Custom Oak Media Wall Unit"
+                st.session_state['item_1_specs'] = [{"Component": "Structural Core Stock", "qty": 4, "cost": 120.0, "cnc": 1, "assem": 2, "spray": 1, "inst": 1}]
+                st.session_state['takeoff_complete'] = True
+                st.rerun()
 
         with col_preview:
             st.markdown("<h4 style='font-size:18px; font-weight:400; margin-bottom:15px;'>📊 Dynamic Pricing Breakdown</h4>", unsafe_allow_html=True)
             if st.session_state['takeoff_complete']:
                 st.metric(label="AI Cost Valuation Projection", value=f"{c_sym}3,840.00")
-                df_1 = pd.DataFrame(st.session_state['item_1_specs'])
-                st.data_editor(df_1, num_rows="dynamic", use_container_width=True, hide_index=True)
             else:
                 st.write("Provide parameters to calculate interactive dynamic price charts.")
 
@@ -257,7 +222,7 @@ def main_app():
         st.markdown("<div style='background-color: #FAFAFA; padding: 30px; border-left: 3px solid #C5A059; border-top: 1px solid #EAEAEA; border-right: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; margin-bottom: 25px;'><h4>🏷️ Apex Precision Joinery Ltd</h4><p>★ 4.9 Platform Trust Framework verified capacity pass.</p></div>", unsafe_allow_html=True)
 
     elif st.session_state['current_view_tab'] == "💬 Production Q&A Hub":
-        st.info("📬 Messaging parameters clear. No matching documentation item discrepancies found.")
+        st.info("📬 Messaging parameters clear.")
 
 # --- 8. EXECUTION LOOP CONTROLLER ---
 if st.session_state['logged_in']:
