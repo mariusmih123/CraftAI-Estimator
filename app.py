@@ -6,16 +6,23 @@ import time
 # --- 1. LUXURY BLACK & POLISHED BRASS DESIGN SYSTEM ---
 st.set_page_config(page_title="AI Joinery Estimator", layout="wide")
 
-# Separating styles into clean individual blocks to prevent any parsing overlap errors
+# Separating styles into clean individual blocks to prevent parsing overlap errors
 st.markdown("<style>.stApp { background-color: #FFFFFF; color: #111111; }</style>", unsafe_allow_html=True)
 st.markdown("<style>h1, h2, h3, h4, p, label { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important; color: #111111 !important; font-weight: 300 !important; letter-spacing: 1px; }</style>", unsafe_allow_html=True)
-st.markdown("<style>.brand-header { font-size: 36px !important; font-weight: 200 !important; letter-spacing: 4px !important; text-transform: uppercase; color: #111111; margin-bottom: 30px; }</style>", unsafe_allow_html=True)
+st.markdown("<style>.brand-header { font-size: 32px !important; font-weight: 200 !important; letter-spacing: 5px !important; text-transform: uppercase; color: #111111; margin-bottom: 5px; text-align: center; }</style>", unsafe_allow_html=True)
+
+# FIXED: High contrast black button with sharp white text that flips to elegant brass outline on hover
 st.markdown("<style>.stButton>button { background-color: #111111 !important; color: #FFFFFF !important; border: 1px solid #111111 !important; border-radius: 0px !important; padding: 12px 24px !important; font-size: 13px !important; text-transform: uppercase !important; letter-spacing: 2px !important; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important; width: 100%; }</style>", unsafe_allow_html=True)
 st.markdown("<style>.stButton>button:hover { background-color: #FFFFFF !important; color: #C5A059 !important; border: 1px solid #C5A059 !important; box-shadow: 0px 4px 15px rgba(197, 160, 89, 0.15); }</style>", unsafe_allow_html=True)
-st.markdown("<style>.card-frame { background-color: #FAFAFA; border-left: 3px solid #C5A059; border-top: 1px solid #EAEAEA; border-right: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; padding: 30px; margin-bottom: 25px; border-radius: 0px; }</style>", unsafe_allow_html=True)
+
+# FIXED: Removed old card outline borders that were cluttering the top layout area
+st.markdown("<style>.card-frame { background-color: #FAFAFA; padding: 35px; border-top: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; margin-bottom: 25px; border-radius: 0px; }</style>", unsafe_allow_html=True)
 st.markdown("<style>.badge-status { background-color: #111111; color: #C5A059; padding: 6px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 400; display: inline-block; margin-bottom: 10px; }</style>", unsafe_allow_html=True)
 st.markdown("<style>[data-testid='stMetricValue'] { color: #C5A059 !important; font-weight: 200 !important; font-size: 40px !important; letter-spacing: -1px; }</style>", unsafe_allow_html=True)
 st.markdown("<style>input, textarea { background-color: #FAFAFA !important; border: 1px solid #EAEAEA !important; border-radius: 0px !important; color: #111111 !important; }</style>", unsafe_allow_html=True)
+
+# Centering tweak for horizontal radio buttons
+st.markdown("<style>div.row-widget.stRadio > div{justify-content: center;}</style>", unsafe_allow_html=True)
 
 # --- 2. GLOBAL SYSTEM VARIATION TRACKING ---
 if 'auth_status' not in st.session_state:
@@ -33,12 +40,15 @@ if 'markup_annotations' not in st.session_state:
 
 # --- 3. CUSTOMER GATEWAY (LOGIN / REGISTRATION) PANEL ---
 if not st.session_state['auth_status']:
-    st.markdown("<div style='text-align: center; margin-top: 100px; margin-bottom: 20px;'><h1 class='brand-header'>AI JOINERY ESTIMATOR PORTAL</h1></div>", unsafe_allow_html=True)
+    # CREATED: Centered typographic logo and header system
+    st.write("<div style='text-align: center; margin-top: 80px; margin-bottom: 10px;'><p style='font-family: Garamond, serif; font-size: 40px; font-weight: 100; letter-spacing: 8px; color: #111111; margin: 0;'>A T E L I E R</p><p style='font-size: 11px; letter-spacing: 5px; color: #C5A059; margin-top: -5px; text-transform: uppercase; font-weight: 400;'>Allure Studio Portfolio</p></div>", unsafe_allow_html=True)
+    st.markdown("<h1 class='brand-header'>AI JOINERY ESTIMATOR PORTAL</h1>", unsafe_allow_html=True)
     
+    # CREATED: Centered access toggle below title
     auth_mode = st.radio("Access Mode", ["Sign In to Account", "Create Free Client Account"], horizontal=True, label_visibility="collapsed")
     st.markdown("<br>", unsafe_allow_html=True)
     
-    col_left, col_mid, col_right = st.columns([1, 1.6, 1])
+    col_left, col_mid, col_right = st.columns([1, 1.5, 1])
     with col_mid:
         st.markdown("<div class='card-frame'>", unsafe_allow_html=True)
         if auth_mode == "Sign In to Account":
