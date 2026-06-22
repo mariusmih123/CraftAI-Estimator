@@ -21,13 +21,19 @@ st.set_page_config(page_title="CraftAI - Enterprise", page_icon="📐", layout="
 
 st.markdown("<style>.stApp { background-color: #FFFFFF; color: #111111; }</style>", unsafe_allow_html=True)
 st.markdown("<style>h1, h2, h3, h4, p, label { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important; color: #111111 !important; font-weight: 300 !important; letter-spacing: 1px; }</style>", unsafe_allow_html=True)
-st.markdown("<style>.brand-header { font-size: 32px !important; font-weight: 200 !important; letter-spacing: 5px !important; text-transform: uppercase; color: #111111; margin-bottom: 5px; text-align: center; }</style>", unsafe_allow_html=True)
+st.markdown("<style>.brand-header { font-size: 32px !important; font-weight: 200 !important; letter-spacing: 5px !important; text-transform: uppercase; color: #111111; margin-top: 50px; margin-bottom: 25px; text-align: center; }</style>", unsafe_allow_html=True)
+
+# High contrast black button with sharp white text that flips to an elegant brass outline on hover
 st.markdown("<style>.stButton>button { background-color: #111111 !important; color: #FFFFFF !important; border: 1px solid #111111 !important; border-radius: 0px !important; padding: 12px 24px !important; font-size: 13px !important; text-transform: uppercase !important; letter-spacing: 2px !important; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important; width: 100%; }</style>", unsafe_allow_html=True)
 st.markdown("<style>.stButton>button:hover { background-color: #FFFFFF !important; color: #C5A059 !important; border: 1px solid #C5A059 !important; box-shadow: 0px 4px 15px rgba(197, 160, 89, 0.15); }</style>", unsafe_allow_html=True)
-st.markdown("<style>.login-card { background-color: #FAFAFA; padding: 40px; border: 1px solid #EAEAEA; margin-top: 10px; border-radius: 0px; }</style>", unsafe_allow_html=True)
+
+# Studio Presentation Card Layout Formatting (Completely seamless white/light profile wrapper)
+st.markdown("<style>.login-card { background-color: #FFFFFF; padding: 10px 40px; margin-top: 10px; border-radius: 0px; }</style>", unsafe_allow_html=True)
 st.markdown("<style>.badge-status { background-color: #111111; color: #C5A059; padding: 6px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 400; display: inline-block; margin-bottom: 10px; }</style>", unsafe_allow_html=True)
 st.markdown("<style>[data-testid='stMetricValue'] { color: #C5A059 !important; font-weight: 200 !important; font-size: 40px !important; letter-spacing: -1px; }</style>", unsafe_allow_html=True)
 st.markdown("<style>input, textarea { background-color: #FAFAFA !important; border: 1px solid #EAEAEA !important; border-radius: 0px !important; color: #111111 !important; }</style>", unsafe_allow_html=True)
+
+# Centering layouts for selectors
 st.markdown("<style>div.row-widget.stRadio > div{justify-content: center;}</style>", unsafe_allow_html=True)
 
 # --- 2. INITIALIZE INTUITIVE GENERATIVE CLIENT NODES ---
@@ -116,7 +122,6 @@ if "verify" in query_params:
 # --- 5. RUNTIME STATE STRUCT VARIATION DICTIONARIES ---
 CURRENCY_MAP = {"British Pound (GBP)": "£", "Euro (EUR)": "€", "US Dollar (USD)": "$"}
 
-# FORCE STATE RESET INJECTION: Safely catch and override the caching memory gap
 if 'keep_logged_in' not in st.session_state:
     st.session_state['keep_logged_in'] = False
 if 'logged_in' not in st.session_state:
@@ -135,7 +140,7 @@ for state_var in ['item_1_specs', 'item_2_specs', 'markup_annotations']:
 
 # --- 6. SECURE CENTERED STUDIO ENTERPRISE GATEWAY PANEL ---
 def login_screen():
-    st.write("<div style='text-align: center; margin-top: 50px; margin-bottom: 10px;'><p style='font-family: Garamond, serif; font-size: 42px; font-weight: 100; letter-spacing: 10px; color: #111111; margin: 0;'>A T E L I E R</p><p style='font-size: 10px; letter-spacing: 6px; color: #C5A059; margin-top: -5px; text-transform: uppercase; font-weight: 400;'>Allure Studio Portfolio</p></div>", unsafe_allow_html=True)
+    # Header title completely isolated and cleanly centered on the top axis
     st.markdown("<h1 class='brand-header'>AI JOINERY ESTIMATOR PORTAL</h1>", unsafe_allow_html=True)
     
     auth_mode = st.radio("Access Mode", ["Sign In to Account", "Create Free Client Account"], horizontal=True, label_visibility="collapsed")
@@ -245,10 +250,10 @@ def main_app():
                 st.write("Provide parameters to calculate interactive dynamic price charts.")
 
     elif st.session_state['current_view_tab'] == "🗄️ Project History & Metrics":
-        st.markdown("<div class='login-card'><span class='badge-status'>3 / 5 Offers Pending</span><h4>📍 White Oak Living Room Media Wall</h4><p>AI Baseline Target: <b>£7,200.00</b></p></div>", unsafe_allow_html=True)
+        st.markdown("<div style='background-color: #FAFAFA; padding: 30px; border-left: 3px solid #C5A059; border-top: 1px solid #EAEAEA; border-right: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; margin-bottom: 25px;'><span class='badge-status'>3 / 5 Offers Pending</span><h4>📍 White Oak Living Room Media Wall</h4><p>AI Baseline Target: <b>£7,200.00</b></p></div>", unsafe_allow_html=True)
 
     elif st.session_state['current_view_tab'] == "🏭 Manufacturer Profiles":
-        st.markdown("<div class='login-card'><h4>🏷️ Apex Precision Joinery Ltd</h4><p>★ 4.9 Platform Trust Framework verified capacity pass.</p></div>", unsafe_allow_html=True)
+        st.markdown("<div style='background-color: #FAFAFA; padding: 30px; border-left: 3px solid #C5A059; border-top: 1px solid #EAEAEA; border-right: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; margin-bottom: 25px;'><h4>🏷️ Apex Precision Joinery Ltd</h4><p>★ 4.9 Platform Trust Framework verified capacity pass.</p></div>", unsafe_allow_html=True)
 
     elif st.session_state['current_view_tab'] == "💬 Production Q&A Hub":
         st.info("📬 Messaging parameters clear. No matching documentation item discrepancies found.")
