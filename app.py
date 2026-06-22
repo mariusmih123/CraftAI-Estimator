@@ -85,4 +85,12 @@ if not st.session_state['auth_status']:
             login_email = st.text_input("Email Address", placeholder="name@company.com")
             login_pass = st.text_input("Password", type="password", placeholder="••••••••")
             
-            if st.button("Access Dashboard", use_container_
+            # FIX: Properly closed parenthesis on this button layout
+            if st.button("Access Dashboard", use_container_width=True):
+                if login_email != "" and login_pass != "":
+                    st.session_state['auth_status'] = True
+                    st.session_state['auth_email'] = login_email
+                    st.rerun()
+                else:
+                    st.error("Please provide valid entry account parameters.")
+        else:
