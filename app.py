@@ -6,22 +6,22 @@ import time
 # --- 1. LUXURY BLACK & POLISHED BRASS DESIGN SYSTEM ---
 st.set_page_config(page_title="AI Joinery Estimator", layout="wide")
 
-# Separating styles into clean individual blocks to prevent parsing overlap errors
+# Single line CSS setups to bypass compiler triple-quote string errors
 st.markdown("<style>.stApp { background-color: #FFFFFF; color: #111111; }</style>", unsafe_allow_html=True)
 st.markdown("<style>h1, h2, h3, h4, p, label { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important; color: #111111 !important; font-weight: 300 !important; letter-spacing: 1px; }</style>", unsafe_allow_html=True)
-st.markdown("<style>.brand-header { font-size: 32px !important; font-weight: 200 !important; letter-spacing: 5px !important; text-transform: uppercase; color: #111111; margin-bottom: 5px; text-align: center; }</style>", unsafe_allow_html=True)
+st.markdown("<style>.brand-header { font-size: 26px !important; font-weight: 200 !important; letter-spacing: 5px !important; text-transform: uppercase; color: #111111; margin-bottom: 25px; text-align: center; }</style>", unsafe_allow_html=True)
 
-# FIXED: High contrast black button with sharp white text that flips to elegant brass outline on hover
+# High contrast black button with sharp white text that flips to an elegant brass outline on hover
 st.markdown("<style>.stButton>button { background-color: #111111 !important; color: #FFFFFF !important; border: 1px solid #111111 !important; border-radius: 0px !important; padding: 12px 24px !important; font-size: 13px !important; text-transform: uppercase !important; letter-spacing: 2px !important; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important; width: 100%; }</style>", unsafe_allow_html=True)
 st.markdown("<style>.stButton>button:hover { background-color: #FFFFFF !important; color: #C5A059 !important; border: 1px solid #C5A059 !important; box-shadow: 0px 4px 15px rgba(197, 160, 89, 0.15); }</style>", unsafe_allow_html=True)
 
-# FIXED: Removed old card outline borders that were cluttering the top layout area
-st.markdown("<style>.card-frame { background-color: #FAFAFA; padding: 35px; border-top: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; margin-bottom: 25px; border-radius: 0px; }</style>", unsafe_allow_html=True)
+# Studio Presentation Card Layout Formatting
+st.markdown("<style>.login-card { background-color: #FAFAFA; padding: 40px; border: 1px solid #EAEAEA; margin-top: 10px; border-radius: 0px; }</style>", unsafe_allow_html=True)
 st.markdown("<style>.badge-status { background-color: #111111; color: #C5A059; padding: 6px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 400; display: inline-block; margin-bottom: 10px; }</style>", unsafe_allow_html=True)
 st.markdown("<style>[data-testid='stMetricValue'] { color: #C5A059 !important; font-weight: 200 !important; font-size: 40px !important; letter-spacing: -1px; }</style>", unsafe_allow_html=True)
 st.markdown("<style>input, textarea { background-color: #FAFAFA !important; border: 1px solid #EAEAEA !important; border-radius: 0px !important; color: #111111 !important; }</style>", unsafe_allow_html=True)
 
-# Centering tweak for horizontal radio buttons
+# Centering layouts for selectors
 st.markdown("<style>div.row-widget.stRadio > div{justify-content: center;}</style>", unsafe_allow_html=True)
 
 # --- 2. GLOBAL SYSTEM VARIATION TRACKING ---
@@ -40,19 +40,23 @@ if 'markup_annotations' not in st.session_state:
 
 # --- 3. CUSTOMER GATEWAY (LOGIN / REGISTRATION) PANEL ---
 if not st.session_state['auth_status']:
-    # CREATED: Centered typographic logo and header system
-    st.write("<div style='text-align: center; margin-top: 80px; margin-bottom: 10px;'><p style='font-family: Garamond, serif; font-size: 40px; font-weight: 100; letter-spacing: 8px; color: #111111; margin: 0;'>A T E L I E R</p><p style='font-size: 11px; letter-spacing: 5px; color: #C5A059; margin-top: -5px; text-transform: uppercase; font-weight: 400;'>Allure Studio Portfolio</p></div>", unsafe_allow_html=True)
+    # Centered Minimalist Logo Header System
+    st.write("<div style='text-align: center; margin-top: 60px; margin-bottom: 10px;'><p style='font-family: Garamond, serif; font-size: 42px; font-weight: 100; letter-spacing: 10px; color: #111111; margin: 0;'>A T E L I E R</p><p style='font-size: 10px; letter-spacing: 6px; color: #C5A059; margin-top: -5px; text-transform: uppercase; font-weight: 400;'>Allure Studio Portfolio</p></div>", unsafe_allow_html=True)
     st.markdown("<h1 class='brand-header'>AI JOINERY ESTIMATOR PORTAL</h1>", unsafe_allow_html=True)
     
-    # CREATED: Centered access toggle below title
+    # Access control selector positioned right under the main header
     auth_mode = st.radio("Access Mode", ["Sign In to Account", "Create Free Client Account"], horizontal=True, label_visibility="collapsed")
     st.markdown("<br>", unsafe_allow_html=True)
     
-    col_left, col_mid, col_right = st.columns([1, 1.5, 1])
+    # Form layout structure column centering grid splits
+    col_left, col_mid, col_right = st.columns([1, 1.4, 1])
+    
     with col_mid:
-        st.markdown("<div class='card-frame'>", unsafe_allow_html=True)
+        # Open modern wrapper container (The old empty header box is now completely removed)
+        st.markdown("<div class='login-card'>", unsafe_allow_html=True)
+        
         if auth_mode == "Sign In to Account":
-            st.subheader("Client Login")
+            st.markdown("<h3 style='text-align: center; font-size: 20px; letter-spacing: 1px; margin-bottom: 20px;'>Client Login</h3>", unsafe_allow_html=True)
             login_email = st.text_input("Email Address", placeholder="name@company.com")
             login_pass = st.text_input("Password", type="password", placeholder="••••••••")
             
@@ -68,8 +72,8 @@ if not st.session_state['auth_status']:
                 else:
                     st.error("Please provide valid entry parameters.")
         else:
-            st.subheader("Register Free Account")
-            st.caption("Gain access to immediate material takeoffs and match with up to 5 custom manufacturer quotes.")
+            st.markdown("<h3 style='text-align: center; font-size: 20px; letter-spacing: 1px; margin-bottom: 10px;'>Register Free Account</h3>", unsafe_allow_html=True)
+            st.write("<p style='text-align: center; color: #666666; font-size: 13px; margin-bottom: 20px;'>Gain access to immediate material takeoffs and match with up to 5 custom manufacturer quotes.</p>", unsafe_allow_html=True)
             reg_name = st.text_input("Full Name / Company Name")
             reg_email = st.text_input("Email Address")
             reg_pass = st.text_input("Choose Password", type="password")
@@ -84,6 +88,7 @@ if not st.session_state['auth_status']:
                     st.rerun()
                 else:
                     st.error("Please fill in all layout profile slots.")
+                    
         st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
@@ -92,7 +97,6 @@ st.write(f'<div style="float: right; padding-top: 15px; color: #777777; font-siz
 st.markdown("<h1 style='font-size: 28px; letter-spacing: 3px; font-weight:200; margin-bottom:5px;'>ATELIER ALLURE STUDIO</h1>", unsafe_allow_html=True)
 st.markdown("<p style='color: #666666; font-size: 14px;'>Please describe your project, upload technical files, and review production metrics below.</p>", unsafe_allow_html=True)
 
-# Minimalist logout option pinned to the sidebar panel
 if st.sidebar.button("🔒 Secure Sign Out", use_container_width=True):
     st.session_state['auth_status'] = False
     st.session_state['auth_email'] = ""
@@ -187,13 +191,13 @@ elif st.session_state['current_view_tab'] == "🗄️ Project History & Metrics"
     st.markdown("<h4 style='font-size:18px; font-weight:400; margin-bottom:20px;'>Your Historic Structural Portfolio</h4>", unsafe_allow_html=True)
     
     st.markdown("""
-        <div class='card-frame'>
+        <div style='background-color: #FAFAFA; padding: 30px; border-left: 3px solid #C5A059; border-top: 1px solid #EAEAEA; border-right: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; margin-bottom: 25px;'>
             <span class='badge-status'>3 / 5 Offers Pending</span>
             <h4 style='margin-top: 5px; font-size:18px; font-weight:400;'>📍 White Oak Living Room Media Wall</h4>
             <p style='color: #666666; font-size:13px; margin-bottom:15px;'>Submitted: June 20, 2026 | Reference: #AA-83921</p>
             <p style='font-size:15px;'>AI Baseline Target: <b>£7,200.00</b> | Active Best Market Offer: <b style='color:#C5A059;'>£6,950.00</b></p>
         </div>
-        <div class='card-frame'>
+        <div style='background-color: #FAFAFA; padding: 30px; border-left: 3px solid #C5A059; border-top: 1px solid #EAEAEA; border-right: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; margin-bottom: 25px;'>
             <span class='badge-status' style='background-color:#C5A059; color:#FFFFFF;'>Fabricated & Closed</span>
             <h4 style='margin-top: 5px; font-size:18px; font-weight:400;'>📍 Floating Corian Basin Storage Vanity</h4>
             <p style='color: #666666; font-size:13px; margin-bottom:15px;'>Closed: May 14, 2026 | Reference: #AA-72104</p>
@@ -207,7 +211,7 @@ elif st.session_state['current_view_tab'] == "🏭 Manufacturer Profiles":
     col_m1, col_m2 = st.columns(2)
     with col_m1:
         st.markdown("""
-            <div class='card-frame'>
+            <div style='background-color: #FAFAFA; padding: 30px; border-left: 3px solid #C5A059; border-top: 1px solid #EAEAEA; border-right: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; margin-bottom: 25px;'>
                 <h4 style='font-size:18px; font-weight:400;'>🏷️ Apex Precision Joinery Ltd</h4>
                 <p style='font-size:14px; margin-bottom:8px;'><b>Workshop Bounds:</b> Greater London / Essex</p>
                 <p style='font-size:14px; color:#555555; line-height:1.4;'><b>Plant Capacity:</b> Homag 5-Axis CNC Routers, High-Pressure Veneer Presses, Automated Edgebanders</p>
@@ -216,7 +220,7 @@ elif st.session_state['current_view_tab'] == "🏭 Manufacturer Profiles":
         """, unsafe_allow_html=True)
     with col_m2:
         st.markdown("""
-            <div class='card-frame'>
+            <div style='background-color: #FAFAFA; padding: 30px; border-left: 3px solid #C5A059; border-top: 1px solid #EAEAEA; border-right: 1px solid #EAEAEA; border-bottom: 1px solid #EAEAEA; margin-bottom: 25px;'>
                 <h4 style='font-size:18px; font-weight:400;'>🏷️ Coastal Bespoke Millwork Hub</h4>
                 <p style='font-size:14px; margin-bottom:8px;'><b>Workshop Bounds:</b> West Sussex Production</p>
                 <p style='font-size:14px; color:#555555; line-height:1.4;'><b>Plant Capacity:</b> Traditional Joinery Tooling, Cleanroom Spray Finishing Chambers, Solid Core Laminators</p>
