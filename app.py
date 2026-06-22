@@ -71,4 +71,9 @@ if 'estimate_broadcasted' not in st.session_state:
     st.session_state['estimate_broadcasted'] = False
 if 'current_view_tab' not in st.session_state:
     st.session_state['current_view_tab'] = "📐 New Project Estimate"
-if 'markup_
+if 'markup_annotations' not in st.session_state:
+    st.session_state['markup_annotations'] = []
+
+# --- 3. CUSTOMER GATEWAY (LOGIN / REGISTRATION) PANEL ---
+if not st.session_state['auth_status']:
+    st.write("<div style='text-align: center; margin-top: 80px; margin-bottom: 40px;'><h1 style='font-size: 38px !important; font-weight: 200
