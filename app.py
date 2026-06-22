@@ -84,8 +84,4 @@ st.markdown("""
         color: #C5A059 !important; /* Forces the numerical price to render in pure gold/brass */
         font-weight: 200 !important;
         font-size: 40px !important;
-        letter-spacing: -1px;
-    }
-    
-    /* Clean Input Fields */
-    input,
+        letter-spacing: -
