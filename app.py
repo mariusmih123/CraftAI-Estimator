@@ -25,7 +25,7 @@ st.markdown("""
         border: 1px solid #333333 !important;
         border-radius: 0px !important;
         padding: 10px 20px !important;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
     }
     .stButton>button:hover {
         background-color: #FFFFFF !important;
@@ -47,10 +47,23 @@ st.markdown("""
         font-weight: bold;
         border-radius: 12px;
     }
+    /* Centered Login Box Wrapper */
+    .login-container {
+        max-width: 450px;
+        margin: 60px auto;
+        padding: 40px;
+        background-color: #1A1A1A;
+        border: 1px solid #262626;
+        text-align: center;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 # --- 2. GLOBAL SYSTEM VARIATION TRACKING ---
+if 'auth_status' not in st.session_state:
+    st.session_state['auth_status'] = False
+if 'auth_email' not in st.session_state:
+    st.session_state['auth_email'] = ""
 if 'estimate_broadcasted' not in st.session_state:
     st.session_state['estimate_broadcasted'] = False
 if 'current_view_tab' not in st.session_state:
@@ -58,13 +71,62 @@ if 'current_view_tab' not in st.session_state:
 if 'markup_annotations' not in st.session_state:
     st.session_state['markup_annotations'] = []
 
-# --- 3. REFINED HOMEPAGE INTRODUCTION ONBOARDING ---
+# --- 3. CUSTOMER GATEWAY (LOGIN / REGISTRATION) PANEL ---
+if not st.session_state['auth_status']:
+    st.write("<div style='text-align: center; margin-top: 50px;'><h1>ATELIER ALLURE</h1><p style='color: #888888; letter-spacing: 2px;'>AI JOINERY ESTIMATOR PORTAL</p></div>", unsafe_allow_html=True)
+    
+    # Simple Toggle for Login vs Free Sign Up
+    auth_mode = st.radio("Access Mode", ["Sign In to Account", "Create Free Client Account"], horizontal=True, label_visibility="collapsed")
+    
+    col_left, col_mid, col_right = st.columns([1, 2, 1])
+    with col_mid:
+        st.markdown("<div class='card-frame'>", unsafe_allow_html=True)
+        if auth_mode == "Sign In to Account":
+            st.subheader("Client Login")
+            login_email = st.text_input("Email Address", placeholder="name@company.com")
+            login_pass = st.text_input("Password", type="password", placeholder="••••••••")
+            
+            if st.button("Access Dashboard", use_container_width=True):
+                if login_email != "" and login_pass != "":
+                    st.session_state['auth_status'] = True
+                    st.session_state['auth_email'] = login_email
+                    st.rerun()
+                else:
+                    st.error("Please provide valid entry account parameters.")
+        else:
+            st.subheader("Register Free Account")
+            st.caption("Gain access to immediate material takeoffs and match with up to 5 custom manufacturer quotes.")
+            reg_name = st.text_input("Full Name / Company Name")
+            reg_email = st.text_input("Email Address")
+            reg_pass = st.text_input("Choose Password", type="password")
+            
+            if st.button("Create Free Account", use_container_width=True):
+                if reg_name != "" and reg_email != "" and reg_pass != "":
+                    st.success("Account initialized successfully!")
+                    st.session_state['auth_status'] = True
+                    st.session_state['auth_email'] = reg_email
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    st.error("Please fill in all layout profile input slots.")
+        st.markdown("</div>", unsafe_allow_html=True)
+    st.stop()  # Completely stops processing layout below until authenticated
+
+# --- 4. REFINED HOMEPAGE INTRODUCTION ONBOARDING (Logged In State) ---
+st.write(f"<div style='float: right; padding-top: 10px; color: #888888;'>Logged in as: <b>{st.session_state['auth_email']}</b></div>", unsafe_allow_html=True)
 st.write("# ATELIER ALLURE")
 st.write("### Welcome to AI Joinery Estimator")
 st.markdown("<p style='color: #B3B3B3; font-size: 16px;'>Please describe your project, upload documents (JPEG, PNG, PDF, DXF, DWG, Collada CAD files), and get an instant estimate for your joinery project.</p>", unsafe_allow_html=True)
+
+# Minimalist log-out shortcut
+if st.sidebar.button("🔒 Secure Portal Sign Out", use_container_width=True):
+    st.session_state['auth_status'] = False
+    st.session_state['auth_email'] = ""
+    st.rerun()
+
 st.markdown("---")
 
-# --- 4. NAVIGATION TAB CONTROL RENDERER ---
+# --- 5. NAVIGATION TAB CONTROL RENDERER ---
 nav_cols = st.columns(4)
 with nav_cols[0]:
     if st.button("📐 New Project Estimate", use_container_width=True):
@@ -81,8 +143,7 @@ with nav_cols[3]:
 
 st.markdown("---")
 
-# --- 5. APPLICATION VIEW WORKFLOW LOGIC ---
-
+# --- 6. APPLICATION VIEW WORKFLOW LOGIC ---
 if st.session_state['current_view_tab'] == "📐 New Project Estimate":
     col_entry, col_preview = st.columns([3, 2])
     
@@ -100,7 +161,6 @@ if st.session_state['current_view_tab'] == "📐 New Project Estimate":
             accept_multiple_files=True
         )
         
-        # Interactive Image Annotation & Markup Simulator Workspace
         st.subheader("3. Visual Picture Markup & Dimension Plotter")
         st.caption("Upload reference images to unlock the spatial boundary calculation matrix tool below.")
         
@@ -129,7 +189,6 @@ if st.session_state['current_view_tab'] == "📐 New Project Estimate":
         if uploaded_blueprints or len(user_spec) > 15:
             st.metric(label="Calculated Automated Cost Projection", value="£5,890.00")
             
-            # Simulated visual estimate breakdown graph
             breakdown_data = pd.DataFrame({
                 'Allocation Category': ['Raw Timber Stock', 'CNC Machine Milling', 'Polishing/Lacquer', 'Labor/Assembly'],
                 'Cost Allocation (£)': [2200, 1150, 940, 1600]
@@ -167,7 +226,6 @@ elif st.session_state['current_view_tab'] == "🗄️ Project History & Metrics"
 
 elif st.session_state['current_view_tab'] == "🏭 Manufacturer Profiles":
     st.subheader("Verified Fabrication Networks")
-    st.write("Review the operational capacities and machine specifications of factories bidding on your architectural files.")
     
     col_m1, col_m2 = st.columns(2)
     with col_m1:
@@ -179,9 +237,6 @@ elif st.session_state['current_view_tab'] == "🏭 Manufacturer Profiles":
                 <span style='color: #FFD700;'>★ 4.9 Platform Trust Score</span>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("View Apex Portfolios & Certifications", key="btn_m1"):
-            st.info("Displaying verified factory inspection passes: ISO 9001 Quality Framework certified, FSC Timber Chain of Custody active.")
-            
     with col_m2:
         st.markdown("""
             <div class='card-frame'>
@@ -191,11 +246,7 @@ elif st.session_state['current_view_tab'] == "🏭 Manufacturer Profiles":
                 <span style='color: #FFD700;'>★ 4.8 Platform Trust Score</span>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("View Coastal Portfolios & Certifications", key="btn_m2"):
-            st.info("Displaying verified factory inspection passes: Fine Guild of Master Craftsmen registered assembly floor.")
 
 elif st.session_state['current_view_tab'] == "💬 Production Q&A Hub":
     st.subheader("Architectural Engineering Thread")
-    st.write("Direct clarification log regarding dimensions, tolerances, and hardware requirements with fabrication estimating departments.")
-    
     st.info("📬 Your current architectural assets are clear. There are no pending material queries matching your active profile.")
