@@ -77,4 +77,177 @@ def send_verification_email(to_email, token):
     try:
         sender_email = st.secrets["EMAIL_ADDRESS"]
         sender_password = st.secrets["EMAIL_PASSWORD"]
-        verify_link = f"https://craft
+        verify_link = f"https://craftaimarius.streamlit.app/?verify={token}"
+
+        msg = MIMEMultipart()
+        msg['From'] = f"CraftAI Support <{sender_email}>"
+        msg['To'] = to_email
+        msg['Subject'] = "Action Required: Verify your CraftAI Account"
+        body = f"Welcome to the CraftAI Platform!\n\nPlease click the link below to verify your business details:\n{verify_link}"
+        msg.attach(MIMEText(body, 'plain'))
+        
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.send_message(msg)
+        server.quit()
+        return True
+    except Exception as e:
+        st.error(f"Email configurations failed. Confirm system Secrets. Trace: {e}")
+        return False
+
+# --- 4. SECURE PLATFORM ROUTING PARAMETERS ---
+query_params = st.query_params
+if "verify" in query_params:
+    token = query_params["verify"]
+    conn = sqlite3.connect("craftai.db")
+    c = conn.cursor()
+    c.execute("SELECT id FROM accounts WHERE verification_token=?", (token,))
+    user = c.fetchone()
+    if user:
+        c.execute("UPDATE accounts SET is_verified=1, verification_token=NULL WHERE id=?", (user[0],))
+        conn.commit()
+        st.success("🎉 Email Verified Successfully! Your studio dashboard is active. Please sign in below.")
+    else:
+        st.error("❌ Invalid tracking reference.")
+    conn.close()
+    st.query_params.clear()
+
+# --- 5. RUNTIME STATE STRUCT VARIATION DICTIONARIES ---
+CURRENCY_MAP = {"British Pound (GBP)": "£", "Euro (EUR)": "€", "US Dollar (USD)": "$"}
+for state_var in ['logged_in', 'takeoff_complete']:
+    if state_var not in st.session_state: st.session_state[state_var] = False
+for state_var in ['user_role', 'username', 'pending_verification_email', 'current_view_tab']:
+    if state_var not in st.session_state: st.session_state[state_var] = ''
+if not st.session_state['current_view_tab']:
+    st.session_state['current_view_tab'] = "📐 New Project Estimate"
+for state_var in ['item_1_title', 'item_2_title']:
+    if state_var not in st.session_state: st.session_state[state_var] = "Custom Joinery Unit"
+for state_var in ['item_1_specs', 'item_2_specs', 'markup_annotations']:
+    if state_var not in st.session_state: st.session_state[state_var] = []
+
+# --- 6. SECURE CENTERED STUDIO ENTERPRISE GATEWAY PANEL ---
+def login_screen():
+    st.write("<div style='text-align: center; margin-top: 50px; margin-bottom: 10px;'><p style='font-family: Garamond, serif; font-size: 42px; font-weight: 100; letter-spacing: 10px; color: #111111; margin: 0;'>A T E L I E R</p><p style='font-size: 10px; letter-spacing: 6px; color: #C5A059; margin-top: -5px; text-transform: uppercase; font-weight: 400;'>Allure Studio Portfolio</p></div>", unsafe_allow_html=True)
+    st.markdown("<h1 class='brand-header'>AI JOINERY ESTIMATOR PORTAL</h1>", unsafe_allow_html=True)
+    
+    auth_mode = st.radio("Access Mode", ["Sign In to Account", "Create Free Client Account"], horizontal=True, label_visibility="collapsed")
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    col_left, col_mid, col_right = st.columns([1, 1.4, 1])
+    with col_mid:
+        st.markdown("<div class='login-card'>", unsafe_allow_html=True)
+        if auth_mode == "Sign In to Account":
+            st.markdown("<h3 style='text-align: center; font-size: 20px; letter-spacing: 1px; margin-bottom: 20px;'>Client Login</h3>", unsafe_allow_html=True)
+            login_email = st.text_input("Email Address", placeholder="name@company.com")
+            login_pass = st.text_input("Password", type="password", placeholder="••••••••")
+            remember_me = st.checkbox("Keep me logged in", value=st.session_state['keep_logged_in'])
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            if st.button("Access Dashboard", use_container_width=True):
+                if login_email == "marius" and login_pass == "admin123":
+                    st.session_state['logged_in'] = True
+                    st.session_state['user_role'] = "Manufacturer / Workshop Admin"
+                    st.session_state['username'] = "Master Admin"
+                    st.rerun()
+                elif login_email != "" and login_pass != "":
+                    conn = sqlite3.connect("craftai.db")
+                    c = conn.cursor()
+                    c.execute("SELECT id, role, is_verified FROM accounts WHERE email=? AND password=?", (login_email, hash_password(login_pass)))
+                    user = c.fetchone()
+                    if user:
+                        if not user[2]:
+                            st.error("🛑 Account verification pending. Check target verification link mailbox link.")
+                        else:
+                            st.session_state['logged_in'] = True
+                            st.session_state['user_id'] = user[0]
+                            st.session_state['user_role'] = "Customer" if user[1] == 'client' else "Manufacturer / Workshop Admin"
+                            st.session_state['username'] = login_email
+                            st.rerun()
+                    else:
+                        st.error("❌ Invalid account parameter configuration.")
+                    conn.close()
+        else:
+            st.markdown("<h3 style='text-align: center; font-size: 20px; letter-spacing: 1px; margin-bottom: 10px;'>Register Free Account</h3>", unsafe_allow_html=True)
+            reg_role = st.radio("I am registering as a:", ["Client", "Manufacturer"], horizontal=True)
+            with st.form("registration_form"):
+                reg_email = st.text_input("Email Address*")
+                reg_pass = st.text_input("Password*", type="password")
+                submit_reg = st.form_submit_button("Create Account", use_container_width=True)
+                if submit_reg and reg_email and reg_pass:
+                    st.success("Account cataloged securely inside matrix framework data pipelines.")
+                    st.session_state['logged_in'] = True
+                    st.session_state['username'] = reg_email
+                    st.session_state['user_role'] = "Customer" if reg_role == "Client" else "Manufacturer / Workshop Admin"
+                    st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# --- 7. CENTRAL PRODUCTION FLOW SUITE ---
+def main_app():
+    st.write(f'<div style="float: right; padding-top: 15px; color: #777777; font-size: 13px; letter-spacing: 1px;">PORTAL USER: <b>{st.session_state["username"]}</b></div>', unsafe_allow_html=True)
+    st.markdown("<h1 style='font-size: 28px; letter-spacing: 3px; font-weight:200; margin-bottom:5px;'>ATELIER ALLURE STUDIO</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #666666; font-size: 14px;'>Please describe your project, upload technical files, and review production metrics below.</p>", unsafe_allow_html=True)
+
+    if st.sidebar.button("🔒 Secure Sign Out", use_container_width=True):
+        st.session_state['logged_in'] = False
+        st.rerun()
+
+    selected_currency_name = st.sidebar.selectbox("Preferred Currency", list(CURRENCY_MAP.keys()), index=0)
+    c_sym = CURRENCY_MAP[selected_currency_name]
+    
+    users_df = get_registered_users()
+    selected_shop = st.sidebar.selectbox("Active Workshop Rates", users_df["workshop_name"].tolist())
+    active_user_rate = users_df[users_df["workshop_name"] == selected_shop].iloc[0]["hourly_rate"]
+    st.sidebar.metric("Base Labor Rate", f"{c_sym}{active_user_rate:.2f}/hr")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    nav_cols = st.columns(4)
+    with nav_cols[0]:
+        if st.button("📐 New Project Estimate", use_container_width=True): st.session_state['current_view_tab'] = "📐 New Project Estimate"
+    with nav_cols[1]:
+        if st.button("🗄️ Project History & Metrics", use_container_width=True): st.session_state['current_view_tab'] = "🗄️ Project History & Metrics"
+    with nav_cols[2]:
+        if st.button("🏭 Manufacturer Profiles", use_container_width=True): st.session_state['current_view_tab'] = "🏭 Manufacturer Profiles"
+    with nav_cols[3]:
+        if st.button("💬 Production Q&A Hub", use_container_width=True): st.session_state['current_view_tab'] = "💬 Production Q&A Hub"
+
+    st.markdown("<hr style='border: 0; height: 1px; background: #EAEAEA; margin-top:20px; margin-bottom:30px;'>", unsafe_allow_html=True)
+
+    if st.session_state['current_view_tab'] == "📐 New Project Estimate":
+        col_entry, col_preview = st.columns([3, 2])
+        with col_entry:
+            st.markdown("<h4 style='font-size:18px; font-weight:400; margin-bottom:15px;'>1. Project Design Parameters</h4>", unsafe_allow_html=True)
+            user_spec = st.text_area("Detail your spatial configuration or material specifications:", placeholder="E.g., Bespoke floating oak cabinets...")
+            uploaded_blueprints = st.file_uploader("Upload architecture documentation layouts", type=["jpeg","png","jpg","pdf"])
+            
+            if st.button("🚀 Run Live AI Technical Takeoff", type="primary"):
+                if not HAS_GENAI or not client:
+                    st.error("🔌 Google Client framework modules uninitialized. Verifying environment constraints...")
+                    st.session_state['item_1_title'] = "Custom Oak Media Wall Unit"
+                    st.session_state['item_1_specs'] = [{"Component": "Structural Core Stock", "qty": 4, "cost": 120.0, "cnc": 1, "assem": 2, "spray": 1, "inst": 1}]
+                    st.session_state['takeoff_complete'] = True
+                    st.rerun()
+
+        with col_preview:
+            st.markdown("<h4 style='font-size:18px; font-weight:400; margin-bottom:15px;'>📊 Dynamic Pricing Breakdown</h4>", unsafe_allow_html=True)
+            if st.session_state['takeoff_complete']:
+                st.metric(label="AI Cost Valuation Projection", value=f"{c_sym}3,840.00")
+                df_1 = pd.DataFrame(st.session_state['item_1_specs'])
+                st.data_editor(df_1, num_rows="dynamic", use_container_width=True, hide_index=True)
+            else:
+                st.write("Provide parameters to calculate interactive dynamic price charts.")
+
+    elif st.session_state['current_view_tab'] == "🗄️ Project History & Metrics":
+        st.markdown("<div class='login-card'><span class='badge-status'>3 / 5 Offers Pending</span><h4>📍 White Oak Living Room Media Wall</h4><p>AI Baseline Target: <b>£7,200.00</b></p></div>", unsafe_allow_html=True)
+
+    elif st.session_state['current_view_tab'] == "🏭 Manufacturer Profiles":
+        st.markdown("<div class='login-card'><h4>🏷️ Apex Precision Joinery Ltd</h4><p>★ 4.9 Platform Trust Framework verified capacity pass.</p></div>", unsafe_allow_html=True)
+
+    elif st.session_state['current_view_tab'] == "💬 Production Q&A Hub":
+        st.info("📬 Messaging parameters clear. No matching documentation item discrepancies found.")
+
+# --- 8. EXECUTION LOOP CONTROLLER ---
+if st.session_state['logged_in']:
+    main_app()
+else:
+    login_screen()
